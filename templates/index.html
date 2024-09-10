@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reckless Driving Detection</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        form {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        label, input {
+            display: block;
+            margin: 10px auto;
+            text-align: left;
+        }
+        input[type="text"], input[type="submit"] {
+            width: 200px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reckless Driving Detection</h1>
+        <form id="prediction-form">
+            <label for="acc_x">Acc X:</label>
+            <input type="text" id="acc_x" name="acc_x">
+            <label for="acc_y">Acc Y:</label>
+            <input type="text" id="acc_y" name="acc_y">
+            <label for="acc_z">Acc Z:</label>
+            <input type="text" id="acc_z" name="acc_z">
+            <label for="gyro_x">Gyro X:</label>
+            <input type="text" id="gyro_x" name="gyro_x">
+            <label for="gyro_y">Gyro Y:</label>
+            <input type="text" id="gyro_y" name="gyro_y">
+            <label for="gyro_z">Gyro Z:</label>
+            <input type="text" id="gyro_z" name="gyro_z">
+            <input type="submit" value="Predict">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get input values
+            var accX = document.getElementById('acc_x').value;
+            var accY = document.getElementById('acc_y').value;
+            var accZ = document.getElementById('acc_z').value;
+            var gyroX = document.getElementById('gyro_x').value;
+            var gyroY = document.getElementById('gyro_y').value;
+            var gyroZ = document.getElementById('gyro_z').value;
+
+            // Prepare JSON data
+            var jsonData = {
+                acc_x: accX,
+                acc_y: accY,
+                acc_z: accZ,
+                gyro_x: gyroX,
+                gyro_y: gyroY,
+                gyro_z: gyroZ
+            };
+
+            // Make POST request
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    window.location.href = '/result?prediction=' + data.prediction;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
